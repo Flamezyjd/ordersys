@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>订单管理系统</title>
+</head>
+<body>
+    <h3>上传Excel文件</h3>
+    <form id="uploadForm" method="post" action="upload.php" enctype="multipart/form-data">
+        选择Excel文件: <input type="file" name="excel_file"><br>
+        <input type="submit" value="上传并导入">
+    </form>
+
+    <h3>添加订单</h3>
+    <form id="orderForm">
+        客户姓名: <input type="text" name="customer_name"><br>
+        产品: <input type="text" name="product"><br>
+        数量: <input type="number" name="quantity"><br>
+        单价: <input type="text" name="price"><br>
+        订单日期: <input type="date" name="order_date"><br>
+        付款状态: <input type="checkbox" name="payment_status" value="1"> 已付款<br>
+        电话: <input type="text" name="phone"><br>
+        邮箱: <input type="email" name="email"><br>
+        <input type="button" value="添加订单" onclick="addOrder()">
+    </form>
+
+    <h3>订单列表</h3>
+    <table id="ordersTable" border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>客户姓名</th>
+                <th>产品</th>
+                <th>数量</th>
+                <th>单价</th>
+                <th>订单日期</th>
+                <th>付款状态</th>
+                <th>电话</th>
+                <th>邮箱</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+            <!-- 动态填充订单 -->
+        </tbody>
+    </table>
+
+    <script>
+    function loadOrders() {
+        fetch('get_orders.php')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('ordersTableBody');
+            tableBody.innerHTML = '';
+            data.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.customer_name}</td>
+                    <td>${order.product}</td>
+                    <td>${order.quantity}</td>
+                    <td>${order.price}</td>
+                    <td>${order.order_date}</td>
+                    <td>${order.payment_status ? '是' : '否'}</td>
+                    <td>${order.phone}</td>
+                    <td>${order.email}</td>
+                    <td><button onclick="deleteOrder(${order.id})">删除</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        });
+    }
+
+    function addOrder() {
+        const form = document.getElementById('orderForm');
+        const formData = new FormData(form);
+
+        fetch('add_order.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(result => {
+            alert(result);
+            loadOrders();
+        });
+    }
+
+    function deleteOrder(orderId) {
+        if (confirm('确定要删除这条订单吗？')) {
+            fetch(`delete_order.php?id=${orderId}`, { method: 'GET' })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                loadOrders();
+            });
+        }
+    }
+
+    window.onload = loadOrders;
+    </script>
+</body>
+</html>

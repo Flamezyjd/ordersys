@@ -1,0 +1,15 @@
+{
+    "name": "flame/order-management",
+    "description": "A simple order management system",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Flame\\OrderManagement\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "phpoffice/phpspreadsheet": "^2.1"
+    }
+}
